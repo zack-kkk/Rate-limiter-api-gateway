@@ -1,23 +1,30 @@
-# High-Throughput Asynchronous Rate Limiter & API Gateway
+# Asynchronous Rate Limiter & API Gateway
 
-An asynchronous L7 API Gateway and Rate Limiting engine built with **Python (FastAPI)**, **Redis**, **Lua**, and **Docker**. Designed to prevent service outages caused by traffic bursts, brute-force attacks, and API abuse.
+A high-throughput, production-ready L7 API Gateway and middleware constructed with **Python (FastAPI)**, **Redis**, and atomic **Lua scripting**. Designed to enforce granular, route-level rate limiting using the **Token Bucket Algorithm** to protect downstream microservices against traffic spikes, scraping, and brute-force attacks.
 
-## Architecture & Features
+---
 
-- **Token Bucket Algorithm:** Supports bursting traffic up to a configurable capacity while enforcing a smooth steady-state request rate.
-- **Atomic Concurrency Guarantee:** Uses **Lua scripts** executed inside Redis memory space to perform atomicity checks, eliminating race conditions across multiple concurrent requests.
-- **Asynchronous I/O:** Built on non-blocking async handlers (`FastAPI` + `redis-py` async pool) to ensure latency overhead remains under **2ms**.
-- **Standardized HTTP Headers:** Injects `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `Retry-After` headers according to RFC standards.
+## Key Features
+
+* **Asynchronous L7 Gateway:** Non-blocking I/O powered by FastAPI and `uvicorn` delivering ultra-low middleware overhead ($p99 < 2\text{ms}$).
+* **Atomic Token Bucket via Redis & Lua:** Solves race conditions in distributed environments by executing token deduction and refill logic atomically inside Redis.
+* **Route-Aware Rate Limiting:** Enforces granular limits based on endpoint sensitivity:
+  * `POST /api/v1/login`: Strict capacity ($5\text{ tokens}$) to defend against brute-force bot attacks.
+  * `GET /api/v1/data`: Generous capacity ($100\text{ tokens}$) to handle rapid user browsing.
+* **Standardized HTTP Headers:** Fully compliant with RFC rate-limiting standards (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`).
+* **Containerized Deployment:** Fully orchestrated using Docker Compose for reproducible local testing and production readiness.
+
+---
 
 ## Tech Stack
-- **Language:** Python 3.11 (FastAPI, Uvicorn)
-- **Database:** Redis (In-Memory Data Store)
-- **Scripting:** Lua (Embedded Redis Execution)
-- **Containerization:** Docker, Docker Compose
 
-## Quickstart & Running Locally
+* **Language:** Python 3.11+
+* **Framework:** FastAPI / AsyncIO
+* **In-Memory Store:** Redis
+* **Scripting:** Lua
+* **Infrastructure:** Docker & Docker Compose
+* **Testing Client:** HTTPX / cURL
 
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/YOUR_USERNAME/rate-limiter-api-gateway.git](https://github.com/YOUR_USERNAME/rate-limiter-api-gateway.git)
-   cd rate-limiter-api-gateway
+---
+
+## System Architecture
